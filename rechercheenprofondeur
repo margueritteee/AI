@@ -1,0 +1,124 @@
+ recherche en largeur :
+-Initialisation :
+queue = deque([['A']])
+visited = set()
+-Itération 1 :
+Défile ['A'], explore les voisins ['B', 'C'].
+Ajoute ['A', 'B'], ['A', 'C'] à queue.
+queue = deque([['A', 'B'], ['A', 'C']])
+-Itération 2 :
+Défile ['A', 'B'], explore ['D', 'E'].
+Ajoute ['A', 'B', 'D'], ['A', 'B', 'E'] à queue.
+queue = deque([['A', 'C'], ['A', 'B', 'D'], ['A', 'B', 'E']])
+-Itération 3 :
+Défile ['A', 'B', 'E'], trouve G (objectif).
+Retourne ['A', 'B', 'E', 'G'].
+
+
+recherche en profondeur :
+par example :
+A --- B --- C
+|     |
+D --- E 
+
+
+chemin A vers E :
+On commence avec stack = [['A']] 
+On explore A : on ajoute ses voisins B et D → stack = [['A', 'D'], ['A', 'B']] 
+On explore B (dernier ajouté ou alphabatique) : on ajoute C et E → stack = [['A', 'D'], ['A', 'B', 'E'], ['A', 'B', 'C']]
+On explore C : pas de nouveaux voisins non visités 
+On explore E : On retourne le chemin ['A', 'B', 'E'] 
+
+example de TP :
+stack = [['A']]
+A ajoutera dabord B puis C (B en dernier donc sera exploré en premier)
+stack = [['A','C'], ['A','B']]
+Pop ['A','B'] (dernier ajouté)
+B ajoutera E et D
+stack = [['A','C'], ['A','B','E'], ['A','B','D']]
+Pop ['A','B','D']
+D ajoutera G
+stack = [['A','C'], ['A','B','E'], ['A','B','D','G']]
+Trouvé , Retourne ['A','B','D','G']
+
+
+
+recherche en profondeur limite (lim=3):
+Premier appel : recursive_dls(['A'], 3)
+Examine les voisins de A : B et C
+Essaie dabord B
+Deuxième niveau : recursive_dls(['A', 'B'], 2)
+Examine les voisins de B : D et E
+Essaie dabord D
+Troisième niveau : recursive_dls(['A', 'B', 'D'], 1)
+Examine les voisins de D : G
+Trouve G !
+Retourne le chemin ['A', 'B', 'D', 'G']
+
+
+
+recherche en profondeur iterative (max depth=3):
+Itération 1 (depth = 0) :
+Essaie de trouver G en 0 étape depuis A
+Impossible → continue
+Itération 2 (depth = 1) :
+Essaie de trouver G en 1 étape depuis A
+Examine B et C
+Pas trouvé → continue
+Itération 3 (depth = 2) :
+Essaie de trouver G en 2 étapes depuis A
+Examine : A→B→D, A→B→E, A→C→F
+Pas trouvé → continue
+Itération 4 (depth = 3) :
+Essaie de trouver G en 3 étapes depuis A
+Trouve le chemin A→B→D→G
+Retourne ce chemin et sarrête
+recherche en profondeur itérative(max_depth=3): ['A', 'B', 'D', 'G']
+
+bfs :
+Initialisation : pq = [(9, ['A'])].
+Dépile A → voisins : B (6), C (8) → ajoute [(6, ['A', 'B']), (8, ['A', 'C'])].
+Dépile B → voisins : E (2), D (3) → ajoute [(2, ['A', 'B', 'E']), (8, ['A', 'C']), (3, ['A', 'B', 'D'])].
+Dépile E → voisins : G (0) → ajoute [(0, ['A', 'B', 'E', 'G']), (8, ['A', 'C']), (3, ['A', 'B', 'D'])].
+Dépile G → objectif atteint.
+Résultat : ['A', 'B', 'E', 'G']
+
+
+A*:
+-État initial :
+pq = [(9, 0, ['A'])]  # (f=9, g=0)
+visited = set()
+-Pop A (f=9)
+Examine B : f = 4 + (6) = 10
+Examine C : f = 3 + (8) = 11
+pq = [(10, 4, ['A', 'B']), (11, 3, ['A', 'C'])]
+visited = {'A'}
+-Pop B (f=10)
+Examine D : f = (4+5) + (3) = 12
+Examine E : f = (4+6) + (2) = 12
+pq = [(11, 3, ['A', 'C']), (12, 9, ['A', 'B', 'D']), (12, 10, ['A', 'B', 'E'])]
+visited = {'A', 'B'}
+-Pop D (f=12)
+Examine G : f = (9+4) + (0) = 13
+Cest le chemin optimal 
+visited = {'A', 'B', 'D'} 
+Lalgorithme trouve le chemin : A → B → D → G
+
+example(la difference entre limite et iteratif):
+graphe :
+      A
+    / | \
+  B   C  D
+ /|   \ 
+E F    G
+
+Objectif : Trouver G
+Recherche en profondeur limitée (limite = 2) :
+Explore : A → B, A → C, A → D (profondeur = 1).
+Explore : B → E, B → F (profondeur = 2).
+Échec : La solution (G) est à une profondeur > 2.
+Recherche en profondeur itérative :
+Itération 1 (profondeur = 1) : Explore : A → B, A → C, A → D.
+Itération 2 (profondeur = 2) : Explore : B → E, B → F, C → G.
+Trouve G 
+
